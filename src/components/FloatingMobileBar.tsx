@@ -19,7 +19,7 @@ export default function FloatingMobileBar() {
   if (totalCount === 0) return null;
 
   return (
-    <div className="md:hidden fixed bottom-3 left-3 right-3 z-40 animate-slide-up">
+    <div className="md:hidden fixed bottom-3 left-3 right-3 z-40 animate-slide-up pb-safe">
       <div className="bg-white/95 backdrop-blur-md border border-red-300 rounded-2xl p-3 shadow-xl flex items-center justify-between gap-3">
         <button
           onClick={() => setIsCartOpen(true)}

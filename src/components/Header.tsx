@@ -50,22 +50,22 @@ export default function Header() {
 
       {/* Main Navbar: Crisp Warm Ivory / Cream with Red highlights */}
       <div className={`transition-all duration-300 border-b border-[#E7DFD5] ${
-        scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' : 'bg-[#FAF7F2] py-4'
+        scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-2.5 sm:py-3' : 'bg-[#FAF7F2] py-3 sm:py-4'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2">
           {/* Brand Logo */}
-          <a href="#" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-red-600 via-rose-600 to-amber-500 flex items-center justify-center shadow-md shadow-red-600/30 group-hover:scale-105 transition-transform">
-              <Flame className="w-6 h-6 sm:w-7 sm:h-7 text-white animate-pulse" />
+          <a href="#" className="flex items-center gap-2 sm:gap-3 group shrink min-w-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-red-600 via-rose-600 to-amber-500 flex items-center justify-center shadow-md shadow-red-600/30 group-hover:scale-105 transition-transform shrink-0">
+              <Flame className="w-5 h-5 sm:w-7 sm:h-7 text-white animate-pulse" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-stone-900 flex items-center gap-1.5">
-                شيف فرجاني
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
+            <div className="flex flex-col min-w-0">
+              <span className="text-lg sm:text-2xl font-black tracking-tight text-stone-900 flex items-center gap-1.5">
+                <span>شيف فرجاني</span>
+                <span className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 shrink-0">
                   بلدي فاخر 🌿
                 </span>
               </span>
-              <span className="text-[11px] sm:text-xs text-stone-500 font-medium">
+              <span className="text-[10px] sm:text-xs text-stone-500 font-medium truncate">
                 سر تتبيلة زمان.. جاهز على نارك في دقايق
               </span>
             </div>

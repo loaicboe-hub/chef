@@ -109,7 +109,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Content Body */}
-        <div className="p-5 space-y-3.5">
+        <div className="p-4 sm:p-5 space-y-3 sm:space-y-3.5">
           {/* Servings and Weight Badges */}
           <div className="flex items-center gap-2 text-[11px] font-bold text-stone-600">
             <span className="flex items-center gap-1 bg-[#FAF7F2] px-2.5 py-1 rounded-lg border border-[#EAE3D9]">
@@ -125,7 +125,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Name & Subtitle */}
           <div>
-            <h3 className="text-lg font-black text-stone-900 leading-snug group-hover:text-red-600 transition-colors">
+            <h3 className="text-base sm:text-lg font-black text-stone-900 leading-snug group-hover:text-red-600 transition-colors">
               {product.name}
             </h3>
             <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">
@@ -148,7 +148,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                   <button
                     key={v.id}
                     onClick={() => setSelectedVariant(v)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold text-right transition-all flex items-center justify-between cursor-pointer ${
+                    className={`px-3 py-2 rounded-xl text-xs font-bold text-right transition-all flex items-center justify-between cursor-pointer ${
                       selectedVariant?.id === v.id
                         ? 'bg-red-50 border border-red-500 text-red-950 shadow-2xs font-black'
                         : 'bg-[#FAF7F2] border border-[#E7DFD5] text-stone-600 hover:bg-[#F2ECE3]'
@@ -167,16 +167,16 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Footer Area: Price and Cart Action */}
-      <div className="p-5 pt-3 border-t border-[#F0EAE1] bg-[#FAF7F2] flex items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 pt-3 border-t border-[#F0EAE1] bg-[#FAF7F2] flex items-center justify-between gap-2.5 sm:gap-3">
         {/* Price display in Appetite Red */}
         <div className="flex flex-col">
           {product.originalPrice && (
-            <span className="text-[11px] text-stone-400 font-bold line-through">
+            <span className="text-[10px] sm:text-[11px] text-stone-400 font-bold line-through">
               {product.originalPrice} ج
             </span>
           )}
           <div className="flex items-baseline gap-1">
-            <span className="text-xl sm:text-2xl font-black text-red-600">
+            <span className="text-lg sm:text-2xl font-black text-red-600">
               {currentPrice}
             </span>
             <span className="text-xs font-bold text-stone-700">جنيه</span>
@@ -187,30 +187,30 @@ export default function ProductCard({ product }: ProductCardProps) {
         {currentQuantity === 0 ? (
           <button
             onClick={handleAddToCart}
-            className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-all cursor-pointer ${
+            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-sm transition-all cursor-pointer ${
               justAdded
-                ? 'bg-emerald-600 text-white scale-105'
-                : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/25 hover:scale-105 active:scale-95'
+                ? 'bg-emerald-600 text-white scale-102'
+                : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/25 hover:scale-102 active:scale-95'
             }`}
           >
             <ShoppingBag className="w-4 h-4 text-white" />
             <span>{justAdded ? 'تمت الإضافة ✓' : 'أضف للسلة'}</span>
           </button>
         ) : (
-          <div className="flex items-center gap-2 bg-white border border-red-400 rounded-xl p-1 shadow-xs">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white border border-red-400 rounded-xl p-1 shadow-xs">
             <button
               onClick={handleDecrement}
-              className="w-7 h-7 rounded-lg bg-stone-100 hover:bg-red-50 text-stone-600 hover:text-red-600 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-stone-100 hover:bg-red-50 text-stone-600 hover:text-red-600 flex items-center justify-center transition-colors cursor-pointer"
               aria-label="تقليل الكمية"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="w-6 text-center text-sm font-black text-red-600">
+            <span className="w-5 sm:w-6 text-center text-xs sm:text-sm font-black text-red-600">
               {currentQuantity}
             </span>
             <button
               onClick={handleIncrement}
-              className="w-7 h-7 rounded-lg bg-red-600 hover:bg-red-500 text-white flex items-center justify-center font-bold transition-all cursor-pointer shadow-xs"
+              className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-red-600 hover:bg-red-500 text-white flex items-center justify-center font-bold transition-all cursor-pointer shadow-xs"
               aria-label="زيادة الكمية"
             >
               <Plus className="w-3.5 h-3.5" />

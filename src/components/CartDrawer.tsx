@@ -370,7 +370,7 @@ ${itemsList}
                       value={deliveryDetails.fullName}
                       onChange={(e) => setDeliveryDetails({ fullName: e.target.value })}
                       placeholder="مثال: محمد فرجاني"
-                      className={`w-full px-3.5 py-2.5 rounded-xl bg-[#FAF7F2] border text-sm text-stone-900 focus:outline-none focus:border-red-500 ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl bg-[#FAF7F2] border text-base sm:text-sm text-stone-900 focus:outline-none focus:border-red-500 ${
                         formErrors.fullName ? 'border-red-500' : 'border-[#E7DFD5]'
                       }`}
                     />
@@ -387,7 +387,7 @@ ${itemsList}
                       onChange={(e) => setDeliveryDetails({ phone: e.target.value })}
                       placeholder="010XXXXXXXX"
                       dir="ltr"
-                      className={`w-full px-3.5 py-2.5 rounded-xl bg-[#FAF7F2] border text-sm text-stone-900 focus:outline-none focus:border-red-500 text-right ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl bg-[#FAF7F2] border text-base sm:text-sm text-stone-900 focus:outline-none focus:border-red-500 text-right ${
                         formErrors.phone ? 'border-red-500' : 'border-[#E7DFD5]'
                       }`}
                     />
@@ -396,13 +396,13 @@ ${itemsList}
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
                       <label className="text-xs text-stone-700 block mb-1 font-bold">المحافظة / المنطقة</label>
                       <select
                         value={deliveryDetails.city}
                         onChange={(e) => setDeliveryDetails({ city: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E7DFD5] text-xs sm:text-sm text-stone-900 focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E7DFD5] text-base sm:text-sm text-stone-900 focus:outline-none focus:border-red-500"
                       >
                         <option value="القاهرة - مصر الجديدة ومدينة نصر">القاهرة (مصر الجديدة ومدينة نصر)</option>
                         <option value="القاهرة - التجمع والقاهرة الجديدة">القاهرة (التجمع والقاهرة الجديدة)</option>
@@ -419,7 +419,7 @@ ${itemsList}
                       <select
                         value={deliveryDetails.deliveryTimeSlot}
                         onChange={(e) => setDeliveryDetails({ deliveryTimeSlot: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E7DFD5] text-xs sm:text-sm text-stone-900 focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E7DFD5] text-base sm:text-sm text-stone-900 focus:outline-none focus:border-red-500"
                       >
                         <option value="قبل الغداء (1:00 م - 3:00 م)">قبل الغداء (1:00 م - 3:00 م)</option>
                         <option value="عصراً (3:00 م - 6:00 م)">عصراً (3:00 م - 6:00 م)</option>
@@ -435,7 +435,7 @@ ${itemsList}
                       value={deliveryDetails.address}
                       onChange={(e) => setDeliveryDetails({ address: e.target.value })}
                       placeholder="الشارع، رقم العمارة، الدور، رقم الشقة، علامة مميزة..."
-                      className={`w-full px-3.5 py-2 rounded-xl bg-[#FAF7F2] border text-xs sm:text-sm text-stone-900 focus:outline-none focus:border-red-500 ${
+                      className={`w-full px-3.5 py-2 rounded-xl bg-[#FAF7F2] border text-base sm:text-sm text-stone-900 focus:outline-none focus:border-red-500 ${
                         formErrors.address ? 'border-red-500' : 'border-[#E7DFD5]'
                       }`}
                     />

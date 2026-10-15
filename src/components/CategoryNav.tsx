@@ -35,20 +35,20 @@ export default function CategoryNav({
   };
 
   return (
-    <div id="menu-catalog" className="sticky top-[108px] z-30 bg-[#FAF7F2]/95 backdrop-blur-md py-4 border-b border-[#E7DFD5] shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+    <div id="menu-catalog" className="sticky top-[95px] sm:top-[108px] z-30 bg-[#FAF7F2]/95 backdrop-blur-md py-2.5 sm:py-4 border-b border-[#E7DFD5] shadow-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2.5 sm:space-y-3">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-4">
           {/* Scrollable Category Filter Pills with Appetite Red Active State */}
-          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 scrollbar-none no-scrollbar">
+          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 scrollbar-none no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
             {CATEGORIES.map((cat) => {
               const isActive = selectedCategory === cat.id;
               return (
                 <button
                   key={cat.id}
                   onClick={() => onSelectCategory(cat.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer shrink-0 ${
                     isActive
-                      ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 text-white shadow-md shadow-red-600/30 scale-105'
+                      ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 text-white shadow-md shadow-red-600/30 scale-102 sm:scale-105'
                       : 'bg-white text-stone-700 hover:bg-[#F5EFE6] hover:text-red-700 hover:border-red-300 border border-[#E7DFD5]'
                   }`}
                 >
@@ -74,7 +74,7 @@ export default function CategoryNav({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="ابحث عن صنف أو تتبيلة (كفتة، بط، بانيه...)"
-              className="w-full pr-10 pl-4 py-2 text-xs sm:text-sm rounded-xl bg-white border border-[#E0D7CC] text-stone-900 placeholder-stone-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 shadow-2xs transition-all"
+              className="w-full pr-10 pl-4 py-2 text-base sm:text-sm rounded-xl bg-white border border-[#E0D7CC] text-stone-900 placeholder-stone-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 shadow-2xs transition-all"
             />
             {searchQuery && (
               <button
