@@ -9,13 +9,13 @@ import {
   ChefHat,
   Clock,
   ShoppingBag,
-  ArrowLeft,
   Shield,
   Gift,
   ChevronRight,
   ChevronLeft,
   Check,
   Package,
+  ArrowLeft,
 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { PRODUCTS } from '../data/products';
@@ -25,7 +25,7 @@ interface HeroSlideItem {
   productId: string;
   tagline: string;
   badge: string;
-  badgeIcon: 'flame' | 'crown' | 'sparkles' | 'shield';
+  badgeIcon: 'flame' | 'crown' | 'sparkles';
   bonusPerk: string;
   title: string;
   subtitle: string;
@@ -172,7 +172,7 @@ export default function HeroDuckBanner() {
     setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
   }, []);
 
-  // Auto-advance timer (5 seconds) with pause on hover/interaction
+  // Auto-advance timer (5.5 seconds) with pause on hover/interaction
   useEffect(() => {
     if (isPaused) return;
 
@@ -203,7 +203,7 @@ export default function HeroDuckBanner() {
   const handleTouchEnd = () => {
     if (touchStartXRef.current !== null && touchEndXRef.current !== null) {
       const diff = touchStartXRef.current - touchEndXRef.current;
-      // In RTL: swipe left (diff > 40) moves next, swipe right (diff < -40) moves prev
+      // In RTL: swipe left (diff > 45) moves next, swipe right (diff < -45) moves prev
       if (diff > 45) {
         goToNextSlide();
       } else if (diff < -45) {
@@ -239,258 +239,243 @@ export default function HeroDuckBanner() {
   return (
     <section
       id="hero-duck"
-      className="relative overflow-hidden pt-3 sm:pt-6 pb-8 sm:pb-12 bg-gradient-to-b from-[#FAF7F2] via-[#F4EDE3] to-[#FAF7F2]"
+      className="relative w-full overflow-hidden bg-stone-950 text-white min-h-[640px] sm:min-h-[720px] lg:h-[88vh] lg:min-h-[700px] lg:max-h-[880px] flex flex-col justify-between"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Subtle warm ambient backlights */}
-      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-red-200/30 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-10 w-[500px] h-[500px] bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
+      {/* ======================================================== */}
+      {/* 1. FULL-BLEED BACKGROUND IMAGE (Spans entire screen width & height) */}
+      {/* ======================================================== */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <Image
+          key={activeProduct.id}
+          src={activeProduct.image}
+          alt={activeProduct.name}
+          fill
+          priority
+          loading="eager"
+          sizes="100vw"
+          className="object-cover object-center scale-102 transition-all duration-1000 ease-out animate-fadeIn"
+        />
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
-        {/* Main Grand Rotating Hero Banner Card */}
-        <div className="relative rounded-3xl sm:rounded-[36px] overflow-hidden bg-gradient-to-br from-[#1C1715] via-[#161210] to-[#0D0B0A] text-white shadow-2xl border border-stone-800 transition-all">
-          {/* Subtle warm ember decorative gradients inside the card */}
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-red-600/25 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+        {/* Cinematic Multi-Stop Gradients for razor-sharp Arabic text readability */}
+        {/* Right-to-Left Gradient on Desktop (deep dark on the right where Arabic text lives, transparent on left for food photo) */}
+        <div className="absolute inset-0 hidden lg:block bg-gradient-to-l from-stone-950/95 via-stone-950/80 via-60% to-transparent pointer-events-none" />
 
-          {/* Top Rotating Header Bar */}
-          <div className="relative z-20 flex flex-wrap items-center justify-between gap-2.5 px-4 sm:px-8 pt-4 sm:pt-6 pb-3 border-b border-stone-800/80 bg-stone-950/40 backdrop-blur-md">
-            {/* Badges */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-950/80 border border-red-700/60 text-red-200 text-xs sm:text-sm font-extrabold shadow-xs">
-                {renderBadgeIcon(activeSlide.badgeIcon)}
-                <span>{activeSlide.badge}</span>
-              </span>
+        {/* Vertical Overlay on Mobile/Tablet so text is always high-contrast & legible */}
+        <div className="absolute inset-0 lg:hidden bg-gradient-to-t from-stone-950 via-stone-950/85 to-stone-950/50 pointer-events-none" />
 
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-700/50 text-emerald-300 text-xs font-bold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>{activeSlide.floatingFreshness}</span>
-              </span>
+        {/* Top subtle vignette */}
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-stone-950/90 to-transparent pointer-events-none" />
+
+        {/* Bottom deep gradient for bottom pills & progress bar */}
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-stone-950 via-stone-950/90 to-transparent pointer-events-none" />
+
+        {/* Warm ember accent glow */}
+        <div className="absolute top-1/4 right-10 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
+      </div>
+
+      {/* ======================================================== */}
+      {/* 2. TOP STRIP: Badges, Perks & Slide Counter */}
+      {/* ======================================================== */}
+      <div className="relative z-10 w-full pt-4 sm:pt-6 px-4 sm:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          {/* Badges */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-950/85 border border-red-700/60 text-red-200 text-xs sm:text-sm font-extrabold shadow-lg backdrop-blur-md">
+              {renderBadgeIcon(activeSlide.badgeIcon)}
+              <span>{activeSlide.badge}</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 text-xs font-bold backdrop-blur-md shadow-lg">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>{activeSlide.floatingFreshness}</span>
+            </span>
+          </div>
+
+          {/* Slide Index Counter & Bonus Perk */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-200 bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-600/50 backdrop-blur-md shadow-lg">
+              <Gift className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>{activeSlide.bonusPerk}</span>
+            </span>
+
+            <div className="flex items-center gap-1 bg-stone-900/90 border border-stone-700/80 px-3 py-1.5 rounded-full text-xs font-black text-stone-200 backdrop-blur-md shadow-lg">
+              <span className="text-amber-400">{String(currentSlide + 1).padStart(2, '0')}</span>
+              <span className="text-stone-500">/</span>
+              <span>{String(HERO_SLIDES.length).padStart(2, '0')}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ======================================================== */}
+      {/* 3. CENTER HERO CONTENT: Headline, Specs, Price & CTAs */}
+      {/* ======================================================== */}
+      <div className="relative z-10 w-full px-4 sm:px-8 lg:px-12 my-auto py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-2xl lg:max-w-3xl flex flex-col justify-center space-y-4 sm:space-y-5 text-right">
+            {/* Tagline */}
+            <div>
+              <div className="inline-flex items-center gap-2 text-amber-400 font-extrabold text-xs sm:text-base tracking-wide mb-1 drop-shadow-sm">
+                <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{activeSlide.tagline}</span>
+              </div>
+
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight drop-shadow-md">
+                {activeSlide.title}
+                <span className="block text-lg sm:text-2xl lg:text-3xl mt-1.5 font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-300 to-amber-300">
+                  {activeSlide.subtitle}
+                </span>
+              </h1>
             </div>
 
-            {/* Slide Index Counter & Bonus Perk */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-amber-200 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-700/50">
-                <Gift className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span>{activeSlide.bonusPerk}</span>
-              </span>
+            {/* Description */}
+            <p className="text-stone-200 text-xs sm:text-sm lg:text-base leading-relaxed drop-shadow-xs max-w-2xl">
+              {activeSlide.description}
+            </p>
 
-              <div className="flex items-center gap-1 bg-stone-900/90 border border-stone-700/80 px-2.5 py-1 rounded-full text-xs font-black text-stone-300">
-                <span className="text-amber-400">{String(currentSlide + 1).padStart(2, '0')}</span>
-                <span className="text-stone-500">/</span>
-                <span>{String(HERO_SLIDES.length).padStart(2, '0')}</span>
+            {/* Quick Specs Cards in Luxury Frosted Glass */}
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-xl pt-1">
+              {activeSlide.stats.map((stat, idx) => (
+                <div
+                  key={idx}
+                  className="p-2.5 sm:p-3.5 rounded-2xl bg-black/60 border border-white/15 flex flex-col gap-0.5 sm:gap-1 text-center sm:text-right backdrop-blur-md shadow-lg"
+                >
+                  <span className="text-[10px] sm:text-xs text-stone-400 font-bold flex items-center justify-center sm:justify-start gap-1">
+                    {renderStatIcon(stat.icon)}
+                    <span>{stat.label}</span>
+                  </span>
+                  <span className="text-xs sm:text-sm font-black text-white truncate">
+                    {stat.value}
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-amber-300 font-bold truncate">
+                    {stat.sub}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Pricing & Call to Action Buttons */}
+            <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6">
+              {/* Price Area */}
+              <div className="flex items-center gap-3 bg-black/50 border border-white/15 px-4 py-2 rounded-2xl backdrop-blur-md w-fit shadow-lg">
+                <div className="flex flex-col">
+                  <span className="text-xs text-stone-400 font-bold line-through">
+                    {activeProduct.originalPrice} ج
+                  </span>
+                  <span className="text-2xl sm:text-4xl font-black text-amber-400">
+                    {activeProduct.price}{' '}
+                    <span className="text-sm sm:text-base text-stone-200 font-bold">جنيه</span>
+                  </span>
+                </div>
+                <span className="px-2.5 py-1 rounded-xl bg-red-600/90 border border-red-500/50 text-white text-xs font-black shadow-xs">
+                  {activeSlide.savingsText}
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                <button
+                  onClick={handleAddToCart}
+                  className={`flex-1 sm:flex-none px-6 sm:px-7 py-3 sm:py-3.5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-red-600/40 transition-all cursor-pointer ${
+                    addedItemMap[activeProduct.id]
+                      ? 'bg-emerald-600 text-white scale-102'
+                      : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white hover:scale-105 active:scale-95'
+                  }`}
+                >
+                  {addedItemMap[activeProduct.id] ? (
+                    <>
+                      <Check className="w-5 h-5 text-white" />
+                      <span>تمت الإضافة للسلة بنجاح ✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="w-5 h-5 text-white" />
+                      <span>أضف للسلة الآن</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setSelectedCookingProduct(activeProduct)}
+                  className="px-4 py-3 sm:py-3.5 rounded-2xl bg-black/60 hover:bg-black/80 text-stone-200 hover:text-white text-xs sm:text-sm font-bold transition-all border border-white/20 flex items-center justify-center gap-2 cursor-pointer backdrop-blur-md shadow-lg active:scale-95"
+                >
+                  <ChefHat className="w-4 h-4 text-amber-400" />
+                  <span>طريقة التسوية</span>
+                </button>
+
+                <a
+                  href="#menu-catalog"
+                  className="hidden md:flex items-center gap-1.5 px-4 py-3 sm:py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all border border-white/15 backdrop-blur-md"
+                >
+                  <span>تصفح القائمة كاملة</span>
+                  <ArrowLeft className="w-4 h-4 text-amber-400" />
+                </a>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Slide Content Body: Responsive Grid */}
-          <div className="relative z-10 p-4 sm:p-8 lg:p-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-              {/* Text & Content Column (7 cols on Desktop) */}
-              <div className="lg:col-span-7 flex flex-col justify-center space-y-4 sm:space-y-5 text-right order-2 lg:order-1">
-                {/* Tagline */}
-                <div>
-                  <div className="inline-flex items-center gap-2 text-amber-400 font-extrabold text-xs sm:text-sm tracking-wide mb-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                    <span>{activeSlide.tagline}</span>
-                  </div>
+      {/* ======================================================== */}
+      {/* 4. EDGE NAVIGATION ARROWS (Floating at Left & Right Screen Edges) */}
+      {/* ======================================================== */}
+      <button
+        onClick={goToPrevSlide}
+        aria-label="الصنف السابق"
+        className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-6 lg:right-8 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-90 cursor-pointer z-20"
+      >
+        <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7" />
+      </button>
 
-                  <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
-                    {activeSlide.title}
-                    <span className="block text-base sm:text-2xl lg:text-3xl mt-1.5 font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-300 to-amber-300">
-                      {activeSlide.subtitle}
-                    </span>
-                  </h1>
-                </div>
+      <button
+        onClick={goToNextSlide}
+        aria-label="الصنف التالي"
+        className="absolute top-1/2 -translate-y-1/2 left-3 sm:left-6 lg:left-8 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-90 cursor-pointer z-20"
+      >
+        <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7" />
+      </button>
 
-                {/* Description */}
-                <p className="text-stone-300 text-xs sm:text-sm lg:text-base leading-relaxed line-clamp-3 sm:line-clamp-none">
-                  {activeSlide.description}
-                </p>
+      {/* ======================================================== */}
+      {/* 5. BOTTOM BAR: Full-width Progress Bar & Product Selector Dock */}
+      {/* ======================================================== */}
+      <div className="relative z-20 w-full pb-3 sm:pb-5 px-3 sm:px-6">
+        {/* Full-width Progress Countdown Line */}
+        <div className="max-w-7xl mx-auto w-full h-1 bg-white/15 rounded-full overflow-hidden mb-3">
+          <div
+            key={currentSlide}
+            className={`h-full bg-gradient-to-r from-red-500 via-rose-500 to-amber-400 rounded-full ${
+              isPaused ? 'w-full opacity-60' : 'animate-heroProgress'
+            }`}
+          />
+        </div>
 
-                {/* Quick Specs Cards in Glassmorphic Dark Charcoal */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3.5 pt-1">
-                  {activeSlide.stats.map((stat, idx) => (
-                    <div
-                      key={idx}
-                      className="p-2.5 sm:p-3.5 rounded-2xl bg-stone-900/80 border border-stone-700/70 flex flex-col gap-0.5 sm:gap-1 text-center sm:text-right backdrop-blur-xs"
-                    >
-                      <span className="text-[10px] sm:text-xs text-stone-400 font-bold flex items-center justify-center sm:justify-start gap-1">
-                        {renderStatIcon(stat.icon)}
-                        <span>{stat.label}</span>
-                      </span>
-                      <span className="text-xs sm:text-sm font-black text-white truncate">
-                        {stat.value}
-                      </span>
-                      <span className="text-[10px] sm:text-[11px] text-amber-300 font-bold truncate">
-                        {stat.sub}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Pricing & Call to Action Row */}
-                <div className="pt-3 sm:pt-4 border-t border-stone-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-                  {/* Price Area */}
-                  <div className="flex items-center justify-between sm:justify-start gap-3">
-                    <div className="flex flex-col">
-                      <span className="text-xs text-stone-500 font-bold line-through">
-                        {activeProduct.originalPrice} ج
-                      </span>
-                      <span className="text-2xl sm:text-4xl font-black text-amber-400">
-                        {activeProduct.price}{' '}
-                        <span className="text-sm sm:text-base text-stone-300 font-bold">جنيه</span>
-                      </span>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-xl bg-red-950/80 border border-red-700/60 text-red-300 text-xs font-black">
-                      {activeSlide.savingsText}
-                    </span>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                    <button
-                      onClick={() => setSelectedCookingProduct(activeProduct)}
-                      className="w-full sm:w-auto px-4 py-2.5 sm:py-3 rounded-xl bg-stone-800/90 hover:bg-stone-700 text-stone-200 hover:text-white text-xs sm:text-sm font-bold transition-all border border-stone-700 flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-95"
-                    >
-                      <ChefHat className="w-4 h-4 text-amber-400" />
-                      <span>طريقة التسوية</span>
-                    </button>
-
-                    <button
-                      onClick={handleAddToCart}
-                      className={`w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
-                        addedItemMap[activeProduct.id]
-                          ? 'bg-emerald-600 text-white scale-102'
-                          : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/30 hover:scale-102 active:scale-95'
-                      }`}
-                    >
-                      {addedItemMap[activeProduct.id] ? (
-                        <>
-                          <Check className="w-5 h-5 text-white" />
-                          <span>تمت الإضافة للسلة بنجاح ✓</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingBag className="w-5 h-5 text-white" />
-                          <span>أضف للسلة الآن</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Large Visual Image Column (5 cols on Desktop) */}
-              <div className="lg:col-span-5 relative order-1 lg:order-2">
-                <div className="relative mx-auto max-w-lg lg:max-w-none rounded-3xl overflow-hidden border-2 border-stone-700/80 shadow-2xl group bg-stone-950">
-                  {/* Photo Container */}
-                  <div className="aspect-[4/3] sm:aspect-[5/4] lg:aspect-square relative w-full overflow-hidden">
-                    <Image
-                      key={activeProduct.id}
-                      src={activeProduct.image}
-                      alt={activeProduct.name}
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 100vw, 550px"
-                      className="object-cover object-center group-hover:scale-105 transition-transform duration-700 animate-fadeIn"
-                    />
-
-                    {/* Gradient Vignette over photo */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  </div>
-
-                  {/* Floating Freshness Stamp (Top-Right) */}
-                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-stone-900/90 backdrop-blur-md border border-emerald-500/40 rounded-2xl p-2 sm:p-2.5 flex items-center gap-2 shadow-xl">
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-950 flex items-center justify-center text-emerald-400 border border-emerald-600/40">
-                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-stone-400 font-bold">جاهز على التسوية</p>
-                      <p className="text-xs font-black text-emerald-300">متبل فاكيوم طازج 🌿</p>
-                    </div>
-                  </div>
-
-                  {/* Navigation Arrows positioned on the image container */}
-                  <button
-                    onClick={goToPrevSlide}
-                    aria-label="الصنف السابق"
-                    className="absolute top-1/2 -translate-y-1/2 right-3 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-stone-900/85 hover:bg-stone-800 text-white backdrop-blur-md border border-stone-600/70 flex items-center justify-center shadow-lg transition-transform active:scale-90 cursor-pointer z-20"
-                  >
-                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
-
-                  <button
-                    onClick={goToNextSlide}
-                    aria-label="الصنف التالي"
-                    className="absolute top-1/2 -translate-y-1/2 left-3 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-stone-900/85 hover:bg-stone-800 text-white backdrop-blur-md border border-stone-600/70 flex items-center justify-center shadow-lg transition-transform active:scale-90 cursor-pointer z-20"
-                  >
-                    <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
-
-                  {/* Teaser Footer Link inside the image card */}
-                  <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-stone-900/90 backdrop-blur-md border border-stone-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex items-center justify-between">
-                    <div className="flex flex-col text-right">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-amber-400">
-                        تصفح القائمة كاملة:
-                      </span>
-                      <span className="text-xs font-black text-white">
-                        بط، مشاوي حاتي، دجاج، بوكسات
-                      </span>
-                    </div>
-                    <a
-                      href="#menu-catalog"
-                      className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-black transition-colors flex items-center gap-1 shadow-xs"
-                    >
-                      <span>عرض</span>
-                      <ArrowLeft className="w-3 h-3" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Interactive Product Selector Pills & Progress Indicator */}
-          <div className="relative z-20 border-t border-stone-800/80 bg-stone-950/80 backdrop-blur-md px-3 sm:px-8 py-3">
-            {/* Countdown Progress Bar */}
-            <div className="relative w-full h-1 bg-stone-800 rounded-full overflow-hidden mb-3">
-              <div
-                key={currentSlide}
-                className={`h-full bg-gradient-to-r from-red-500 via-rose-500 to-amber-400 rounded-full ${
-                  isPaused ? 'w-full opacity-60' : 'animate-heroProgress'
+        {/* Product Selector Pills Dock */}
+        <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-3 overflow-x-auto pb-1 scrollbar-none max-w-7xl mx-auto">
+          {HERO_SLIDES.map((slide, index) => {
+            const isActive = index === currentSlide;
+            return (
+              <button
+                key={slide.id}
+                onClick={() => setCurrentSlide(index)}
+                className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer backdrop-blur-md shadow-lg ${
+                  isActive
+                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-red-600/40 scale-105 border border-red-400/60'
+                    : 'bg-black/60 hover:bg-black/80 text-stone-300 hover:text-white border border-white/15'
                 }`}
-              />
-            </div>
-
-            {/* Product Switcher Pills */}
-            <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-3 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-              {HERO_SLIDES.map((slide, index) => {
-                const isActive = index === currentSlide;
-                return (
-                  <button
-                    key={slide.id}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-600/30 scale-102 border border-red-400/50'
-                        : 'bg-stone-900/90 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-800'
-                    }`}
-                  >
-                    <span>{slide.pillIcon}</span>
-                    <span>{slide.pillLabel}</span>
-                    {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping inline-block" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+              >
+                <span>{slide.pillIcon}</span>
+                <span>{slide.pillLabel}</span>
+                {isActive && (
+                  <span className="w-2 h-2 rounded-full bg-amber-300 animate-ping inline-block" />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>
