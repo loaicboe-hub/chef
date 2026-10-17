@@ -126,3 +126,29 @@ button, a, input, select, textarea {
   animation: fadeIn 0.45s ease-out;
 }
 
+/* 3D Carousel & Stage Styles */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.perspective-1600 {
+  perspective: 1600px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@keyframes float3d {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotateX(2deg);
+  }
+}
+
+.animate-float3d {
+  animation: float3d 4s ease-in-out infinite;
+}
+

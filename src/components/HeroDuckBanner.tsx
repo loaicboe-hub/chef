@@ -15,7 +15,7 @@ import {
   ChevronLeft,
   Check,
   Package,
-  ArrowLeft,
+  RotateCw,
 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { PRODUCTS } from '../data/products';
@@ -156,7 +156,7 @@ export default function HeroDuckBanner() {
   const [isPaused, setIsPaused] = useState(false);
   const [addedItemMap, setAddedItemMap] = useState<Record<string, boolean>>({});
 
-  // Touch swipe support
+  // Touch & Drag swipe tracking
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
 
@@ -172,13 +172,13 @@ export default function HeroDuckBanner() {
     setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
   }, []);
 
-  // Auto-advance timer (5.5 seconds) with pause on hover/interaction
+  // Autonomous 3D Auto-Rotation: Spun every 4.5 seconds
   useEffect(() => {
     if (isPaused) return;
 
     const interval = setInterval(() => {
       goToNextSlide();
-    }, 5500);
+    }, 4500);
 
     return () => clearInterval(interval);
   }, [isPaused, goToNextSlide]);
@@ -203,7 +203,7 @@ export default function HeroDuckBanner() {
   const handleTouchEnd = () => {
     if (touchStartXRef.current !== null && touchEndXRef.current !== null) {
       const diff = touchStartXRef.current - touchEndXRef.current;
-      // In RTL: swipe left (diff > 45) moves next, swipe right (diff < -45) moves prev
+      // In RTL: swipe left (> 40) -> next, swipe right (< -40) -> prev
       if (diff > 45) {
         goToNextSlide();
       } else if (diff < -45) {
@@ -236,10 +236,67 @@ export default function HeroDuckBanner() {
     }
   };
 
+  /**
+   * 3D Position Matrix for 5 cards:
+   * Returns exact CSS 3D transform, perspective depth, rotation angle and scale
+   */
+  const get3DCardStyle = (index: number) => {
+    const total = HERO_SLIDES.length;
+    let diff = (index - currentSlide + total) % total;
+    if (diff > total / 2) diff -= total; // range: -2, -1, 0, 1, 2
+
+    // Center Front Card (Active Focus)
+    if (diff === 0) {
+      return {
+        transform: 'translate3d(0, 0, 110px) rotateY(0deg) scale(1)',
+        opacity: 1,
+        zIndex: 30,
+        filter: 'blur(0px) brightness(1.05)',
+        cursor: 'default',
+        pointerEvents: 'auto' as const,
+      };
+    }
+
+    // Left 3D Wing (Next item in 3D orbit)
+    if (diff === 1) {
+      return {
+        transform: 'translate3d(-62%, 0, -120px) rotateY(-32deg) scale(0.85)',
+        opacity: 0.65,
+        zIndex: 20,
+        filter: 'blur(1px) brightness(0.75)',
+        cursor: 'pointer',
+        pointerEvents: 'auto' as const,
+      };
+    }
+
+    // Right 3D Wing (Previous item in 3D orbit)
+    if (diff === -1) {
+      return {
+        transform: 'translate3d(62%, 0, -120px) rotateY(32deg) scale(0.85)',
+        opacity: 0.65,
+        zIndex: 20,
+        filter: 'blur(1px) brightness(0.75)',
+        cursor: 'pointer',
+        pointerEvents: 'auto' as const,
+      };
+    }
+
+    // Background Orbit (Deep in 3D stage)
+    const isLeft = diff > 0;
+    return {
+      transform: `translate3d(${isLeft ? -108 : 108}%, 0, -290px) rotateY(${isLeft ? -52 : 52}deg) scale(0.68)`,
+      opacity: 0.22,
+      zIndex: 10,
+      filter: 'blur(3px) brightness(0.5)',
+      cursor: 'pointer',
+      pointerEvents: 'none' as const,
+    };
+  };
+
   return (
     <section
       id="hero-duck"
-      className="relative w-full overflow-hidden bg-stone-950 text-white min-h-[640px] sm:min-h-[720px] lg:h-[88vh] lg:min-h-[700px] lg:max-h-[880px] flex flex-col justify-between"
+      className="relative w-full overflow-hidden bg-stone-950 text-white min-h-[720px] sm:min-h-[800px] lg:h-[92vh] lg:min-h-[760px] lg:max-h-[920px] flex flex-col justify-between select-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -247,41 +304,33 @@ export default function HeroDuckBanner() {
       onTouchEnd={handleTouchEnd}
     >
       {/* ======================================================== */}
-      {/* 1. FULL-BLEED BACKGROUND IMAGE (Spans entire screen width & height) */}
+      {/* AMBIENT SCREEN-FILLING BACKGROUND (Dynamic per active dish) */}
       {/* ======================================================== */}
-      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
         <Image
-          key={activeProduct.id}
+          key={`ambient-${activeProduct.id}`}
           src={activeProduct.image}
           alt={activeProduct.name}
           fill
           priority
-          loading="eager"
           sizes="100vw"
-          className="object-cover object-center scale-102 transition-all duration-1000 ease-out animate-fadeIn"
+          className="object-cover object-center scale-125 blur-3xl opacity-25 transition-all duration-1000 ease-out"
         />
 
-        {/* Cinematic Multi-Stop Gradients for razor-sharp Arabic text readability */}
-        {/* Right-to-Left Gradient on Desktop (deep dark on the right where Arabic text lives, transparent on left for food photo) */}
-        <div className="absolute inset-0 hidden lg:block bg-gradient-to-l from-stone-950/95 via-stone-950/80 via-60% to-transparent pointer-events-none" />
+        {/* Ambient Dark Gradient Overlays */}
+        <div className="absolute inset-0 bg-radial from-stone-900/60 via-stone-950/85 to-stone-950" />
+        <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-stone-950 via-stone-950/90 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-stone-950/90 to-transparent" />
 
-        {/* Vertical Overlay on Mobile/Tablet so text is always high-contrast & legible */}
-        <div className="absolute inset-0 lg:hidden bg-gradient-to-t from-stone-950 via-stone-950/85 to-stone-950/50 pointer-events-none" />
-
-        {/* Top subtle vignette */}
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-stone-950/90 to-transparent pointer-events-none" />
-
-        {/* Bottom deep gradient for bottom pills & progress bar */}
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-stone-950 via-stone-950/90 to-transparent pointer-events-none" />
-
-        {/* Warm ember accent glow */}
-        <div className="absolute top-1/4 right-10 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
+        {/* Floating Ember Light Sparks */}
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       {/* ======================================================== */}
-      {/* 2. TOP STRIP: Badges, Perks & Slide Counter */}
+      {/* 1. TOP HEADER: Badges, 3D Auto-Spin Indicator & Counter */}
       {/* ======================================================== */}
-      <div className="relative z-10 w-full pt-4 sm:pt-6 px-4 sm:px-8 lg:px-12">
+      <div className="relative z-20 w-full pt-4 sm:pt-6 px-4 sm:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Badges */}
           <div className="flex flex-wrap items-center gap-2">
@@ -290,14 +339,19 @@ export default function HeroDuckBanner() {
               <span>{activeSlide.badge}</span>
             </span>
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 text-xs font-bold backdrop-blur-md shadow-lg">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 text-xs font-bold backdrop-blur-md shadow-lg">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>{activeSlide.floatingFreshness}</span>
             </span>
           </div>
 
-          {/* Slide Index Counter & Bonus Perk */}
+          {/* 3D Auto-Spinning Status & Slide Counter */}
           <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-amber-200 bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-600/50 backdrop-blur-md shadow-lg">
+              <RotateCw className={`w-3.5 h-3.5 text-amber-400 shrink-0 ${isPaused ? '' : 'animate-spin'}`} style={{ animationDuration: '6s' }} />
+              <span>معرض 3D دوّار تلقائي</span>
+            </div>
+
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-200 bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-600/50 backdrop-blur-md shadow-lg">
               <Gift className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>{activeSlide.bonusPerk}</span>
@@ -313,148 +367,197 @@ export default function HeroDuckBanner() {
       </div>
 
       {/* ======================================================== */}
-      {/* 3. CENTER HERO CONTENT: Headline, Specs, Price & CTAs */}
+      {/* 2. THE GRAND 3D REVOLVING STAGE (Rotating in 3D Space) */}
       {/* ======================================================== */}
-      <div className="relative z-10 w-full px-4 sm:px-8 lg:px-12 my-auto py-6 sm:py-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-2xl lg:max-w-3xl flex flex-col justify-center space-y-4 sm:space-y-5 text-right">
-            {/* Tagline */}
-            <div>
-              <div className="inline-flex items-center gap-2 text-amber-400 font-extrabold text-xs sm:text-base tracking-wide mb-1 drop-shadow-sm">
-                <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>{activeSlide.tagline}</span>
+      <div className="relative z-10 w-full my-auto py-2 sm:py-4 flex flex-col items-center justify-center">
+        {/* 3D Perspective Arena */}
+        <div className="relative w-full max-w-6xl h-[280px] sm:h-[360px] lg:h-[420px] flex items-center justify-center perspective-1600 preserve-3d">
+          {/* Glowing 3D Showcase Turntable / Pedestal underneath */}
+          <div className="absolute -bottom-6 w-[340px] sm:w-[580px] lg:w-[780px] h-[70px] sm:h-[110px] rounded-[100%] bg-gradient-to-t from-red-600/35 via-amber-500/20 to-transparent blur-xl transform -rotate-X-[70deg] pointer-events-none" />
+
+          {/* Render all 5 cards concurrently in 3D Orbit */}
+          {HERO_SLIDES.map((slide, index) => {
+            const product = PRODUCTS.find((p) => p.id === slide.productId) || PRODUCTS[0];
+            const isCenter = index === currentSlide;
+            const style3D = get3DCardStyle(index);
+
+            return (
+              <div
+                key={slide.id}
+                onClick={() => !isCenter && setCurrentSlide(index)}
+                style={style3D}
+                className={`absolute w-[86vw] max-w-[340px] sm:max-w-[480px] lg:max-w-[620px] aspect-[16/10] sm:aspect-[16/10] rounded-3xl overflow-hidden border-2 transition-all duration-800 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-2xl ${
+                  isCenter
+                    ? 'border-amber-400/80 shadow-[0_25px_60px_-10px_rgba(220,38,38,0.45)] animate-float3d ring-2 ring-red-500/30'
+                    : 'border-stone-700/70 hover:border-amber-400/50 shadow-black/80'
+                }`}
+              >
+                {/* Product Image */}
+                <div className="relative w-full h-full overflow-hidden bg-stone-950">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    priority={isCenter}
+                    sizes="(max-width: 768px) 85vw, 650px"
+                    className={`object-cover object-center transition-transform duration-700 ${
+                      isCenter ? 'scale-105' : 'scale-100'
+                    }`}
+                  />
+
+                  {/* Gradient Lighting overlay on card */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
+
+                  {/* Card Floating Top Badge */}
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-black/75 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-black shadow-md">
+                      {slide.pillIcon} {slide.badge}
+                    </span>
+                  </div>
+
+                  {/* Card Bottom Info Overlay */}
+                  <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 z-10 flex items-end justify-between gap-2">
+                    <div className="text-right">
+                      <p className="text-[11px] sm:text-xs text-amber-300 font-bold drop-shadow-sm">
+                        {slide.tagline}
+                      </p>
+                      <h3 className="text-base sm:text-xl lg:text-2xl font-black text-white drop-shadow-md">
+                        {slide.title}
+                      </h3>
+                    </div>
+
+                    <div className="bg-black/80 backdrop-blur-md border border-amber-400/40 rounded-xl px-2.5 py-1 text-center shrink-0">
+                      <span className="text-sm sm:text-lg font-black text-amber-400">{product.price} ج</span>
+                    </div>
+                  </div>
+                </div>
               </div>
+            );
+          })}
+        </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight drop-shadow-md">
-                {activeSlide.title}
-                <span className="block text-lg sm:text-2xl lg:text-3xl mt-1.5 font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-300 to-amber-300">
-                  {activeSlide.subtitle}
-                </span>
-              </h1>
-            </div>
-
-            {/* Description */}
-            <p className="text-stone-200 text-xs sm:text-sm lg:text-base leading-relaxed drop-shadow-xs max-w-2xl">
+        {/* ======================================================== */}
+        {/* 3. ACTIVE DISH SPECS & DIRECT CTAs (Below 3D Stage) */}
+        {/* ======================================================== */}
+        <div className="relative z-20 w-full max-w-4xl px-4 mt-3 sm:mt-5 text-center flex flex-col items-center">
+          {/* Active Product Headline & Subtitle */}
+          <div className="mb-3">
+            <h2 className="text-xl sm:text-3xl font-black text-white drop-shadow-md">
+              {activeSlide.title}{' '}
+              <span className="text-sm sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-300 to-amber-300">
+                {activeSlide.subtitle}
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-300 mt-1 max-w-2xl mx-auto line-clamp-2">
               {activeSlide.description}
             </p>
+          </div>
 
-            {/* Quick Specs Cards in Luxury Frosted Glass */}
-            <div className="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-xl pt-1">
-              {activeSlide.stats.map((stat, idx) => (
-                <div
-                  key={idx}
-                  className="p-2.5 sm:p-3.5 rounded-2xl bg-black/60 border border-white/15 flex flex-col gap-0.5 sm:gap-1 text-center sm:text-right backdrop-blur-md shadow-lg"
-                >
-                  <span className="text-[10px] sm:text-xs text-stone-400 font-bold flex items-center justify-center sm:justify-start gap-1">
-                    {renderStatIcon(stat.icon)}
-                    <span>{stat.label}</span>
-                  </span>
-                  <span className="text-xs sm:text-sm font-black text-white truncate">
-                    {stat.value}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-amber-300 font-bold truncate">
-                    {stat.sub}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Pricing & Call to Action Buttons */}
-            <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6">
-              {/* Price Area */}
-              <div className="flex items-center gap-3 bg-black/50 border border-white/15 px-4 py-2 rounded-2xl backdrop-blur-md w-fit shadow-lg">
-                <div className="flex flex-col">
-                  <span className="text-xs text-stone-400 font-bold line-through">
-                    {activeProduct.originalPrice} ج
-                  </span>
-                  <span className="text-2xl sm:text-4xl font-black text-amber-400">
-                    {activeProduct.price}{' '}
-                    <span className="text-sm sm:text-base text-stone-200 font-bold">جنيه</span>
-                  </span>
-                </div>
-                <span className="px-2.5 py-1 rounded-xl bg-red-600/90 border border-red-500/50 text-white text-xs font-black shadow-xs">
-                  {activeSlide.savingsText}
+          {/* Quick Specs Cards in Luxury Glassmorphism */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-xl mb-4">
+            {activeSlide.stats.map((stat, idx) => (
+              <div
+                key={idx}
+                className="p-2 sm:p-2.5 rounded-2xl bg-black/60 border border-white/15 flex flex-col gap-0.5 text-center backdrop-blur-md shadow-md"
+              >
+                <span className="text-[10px] sm:text-xs text-stone-400 font-bold flex items-center justify-center gap-1">
+                  {renderStatIcon(stat.icon)}
+                  <span>{stat.label}</span>
+                </span>
+                <span className="text-xs sm:text-sm font-black text-white truncate">
+                  {stat.value}
+                </span>
+                <span className="text-[10px] sm:text-[11px] text-amber-300 font-bold truncate">
+                  {stat.sub}
                 </span>
               </div>
+            ))}
+          </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                <button
-                  onClick={handleAddToCart}
-                  className={`flex-1 sm:flex-none px-6 sm:px-7 py-3 sm:py-3.5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-red-600/40 transition-all cursor-pointer ${
-                    addedItemMap[activeProduct.id]
-                      ? 'bg-emerald-600 text-white scale-102'
-                      : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white hover:scale-105 active:scale-95'
-                  }`}
-                >
-                  {addedItemMap[activeProduct.id] ? (
-                    <>
-                      <Check className="w-5 h-5 text-white" />
-                      <span>تمت الإضافة للسلة بنجاح ✓</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingBag className="w-5 h-5 text-white" />
-                      <span>أضف للسلة الآن</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setSelectedCookingProduct(activeProduct)}
-                  className="px-4 py-3 sm:py-3.5 rounded-2xl bg-black/60 hover:bg-black/80 text-stone-200 hover:text-white text-xs sm:text-sm font-bold transition-all border border-white/20 flex items-center justify-center gap-2 cursor-pointer backdrop-blur-md shadow-lg active:scale-95"
-                >
-                  <ChefHat className="w-4 h-4 text-amber-400" />
-                  <span>طريقة التسوية</span>
-                </button>
-
-                <a
-                  href="#menu-catalog"
-                  className="hidden md:flex items-center gap-1.5 px-4 py-3 sm:py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all border border-white/15 backdrop-blur-md"
-                >
-                  <span>تصفح القائمة كاملة</span>
-                  <ArrowLeft className="w-4 h-4 text-amber-400" />
-                </a>
-              </div>
+          {/* Pricing & CTA Buttons Row */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full">
+            {/* Price tag */}
+            <div className="flex items-center gap-2.5 bg-black/60 border border-white/15 px-3.5 py-2 rounded-2xl backdrop-blur-md shadow-md">
+              <span className="text-xs text-stone-400 font-bold line-through">
+                {activeProduct.originalPrice} ج
+              </span>
+              <span className="text-xl sm:text-2xl font-black text-amber-400">
+                {activeProduct.price} <span className="text-xs text-stone-200">جنيه</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-lg bg-red-600/90 text-white text-[11px] font-black">
+                {activeSlide.savingsText}
+              </span>
             </div>
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              className={`px-6 sm:px-7 py-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-red-600/40 transition-all cursor-pointer ${
+                addedItemMap[activeProduct.id]
+                  ? 'bg-emerald-600 text-white scale-102'
+                  : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white hover:scale-105 active:scale-95'
+              }`}
+            >
+              {addedItemMap[activeProduct.id] ? (
+                <>
+                  <Check className="w-5 h-5 text-white" />
+                  <span>تمت الإضافة للسلة بنجاح ✓</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="w-5 h-5 text-white" />
+                  <span>أضف للسلة الآن</span>
+                </>
+              )}
+            </button>
+
+            {/* Cooking Guide Button */}
+            <button
+              onClick={() => setSelectedCookingProduct(activeProduct)}
+              className="px-4 py-3 rounded-2xl bg-black/60 hover:bg-black/80 text-stone-200 hover:text-white text-xs sm:text-sm font-bold transition-all border border-white/20 flex items-center justify-center gap-2 cursor-pointer backdrop-blur-md shadow-md active:scale-95"
+            >
+              <ChefHat className="w-4 h-4 text-amber-400" />
+              <span>طريقة التسوية</span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* ======================================================== */}
-      {/* 4. EDGE NAVIGATION ARROWS (Floating at Left & Right Screen Edges) */}
+      {/* 4. EDGE 3D NAVIGATION ARROWS */}
       {/* ======================================================== */}
       <button
         onClick={goToPrevSlide}
-        aria-label="الصنف السابق"
-        className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-6 lg:right-8 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-90 cursor-pointer z-20"
+        aria-label="الصنف السابق في المسرح الـ 3D"
+        className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-6 lg:right-8 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-90 cursor-pointer z-30"
       >
         <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7" />
       </button>
 
       <button
         onClick={goToNextSlide}
-        aria-label="الصنف التالي"
-        className="absolute top-1/2 -translate-y-1/2 left-3 sm:left-6 lg:left-8 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-90 cursor-pointer z-20"
+        aria-label="الصنف التالي في المسرح الـ 3D"
+        className="absolute top-1/2 -translate-y-1/2 left-3 sm:left-6 lg:left-8 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-90 cursor-pointer z-30"
       >
         <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7" />
       </button>
 
       {/* ======================================================== */}
-      {/* 5. BOTTOM BAR: Full-width Progress Bar & Product Selector Dock */}
+      {/* 5. BOTTOM PROGRESS & 3D PRODUCT SELECTOR PILLS */}
       {/* ======================================================== */}
       <div className="relative z-20 w-full pb-3 sm:pb-5 px-3 sm:px-6">
-        {/* Full-width Progress Countdown Line */}
+        {/* Full-width 3D Rotation Progress Line */}
         <div className="max-w-7xl mx-auto w-full h-1 bg-white/15 rounded-full overflow-hidden mb-3">
           <div
             key={currentSlide}
             className={`h-full bg-gradient-to-r from-red-500 via-rose-500 to-amber-400 rounded-full ${
               isPaused ? 'w-full opacity-60' : 'animate-heroProgress'
             }`}
+            style={{ animationDuration: '4.5s' }}
           />
         </div>
 
-        {/* Product Selector Pills Dock */}
+        {/* 3D Product Selector Dock */}
         <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-3 overflow-x-auto pb-1 scrollbar-none max-w-7xl mx-auto">
           {HERO_SLIDES.map((slide, index) => {
             const isActive = index === currentSlide;
