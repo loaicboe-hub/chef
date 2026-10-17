@@ -153,7 +153,6 @@ const HERO_SLIDES: HeroSlideItem[] = [
 export default function HeroDuckBanner() {
   const { addItem, setSelectedCookingProduct } = useCartStore();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [addedItemMap, setAddedItemMap] = useState<Record<string, boolean>>({});
 
   // Touch & Drag swipe tracking
@@ -172,16 +171,14 @@ export default function HeroDuckBanner() {
     setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
   }, []);
 
-  // Autonomous 3D Auto-Rotation: Spun every 4.5 seconds
+  // Continuous Automatic 3D Rotation: Automatically turns every 3.2 seconds
   useEffect(() => {
-    if (isPaused) return;
-
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       goToNextSlide();
-    }, 4500);
+    }, 3200);
 
-    return () => clearInterval(interval);
-  }, [isPaused, goToNextSlide]);
+    return () => clearInterval(timer);
+  }, [currentSlide, goToNextSlide]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -297,8 +294,6 @@ export default function HeroDuckBanner() {
     <section
       id="hero-duck"
       className="relative w-full overflow-hidden bg-stone-950 text-white min-h-[720px] sm:min-h-[800px] lg:h-[92vh] lg:min-h-[760px] lg:max-h-[920px] flex flex-col justify-between select-none"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -348,8 +343,9 @@ export default function HeroDuckBanner() {
           {/* 3D Auto-Spinning Status & Slide Counter */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-amber-200 bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-600/50 backdrop-blur-md shadow-lg">
-              <RotateCw className={`w-3.5 h-3.5 text-amber-400 shrink-0 ${isPaused ? '' : 'animate-spin'}`} style={{ animationDuration: '6s' }} />
-              <span>معرض 3D دوّار تلقائي</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
+              <RotateCw className="w-3.5 h-3.5 text-amber-400 shrink-0 animate-spin" style={{ animationDuration: '4s' }} />
+              <span>دوران 3D تلقائي مستمر</span>
             </div>
 
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-200 bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-600/50 backdrop-blur-md shadow-lg">
@@ -550,10 +546,8 @@ export default function HeroDuckBanner() {
         <div className="max-w-7xl mx-auto w-full h-1 bg-white/15 rounded-full overflow-hidden mb-3">
           <div
             key={currentSlide}
-            className={`h-full bg-gradient-to-r from-red-500 via-rose-500 to-amber-400 rounded-full ${
-              isPaused ? 'w-full opacity-60' : 'animate-heroProgress'
-            }`}
-            style={{ animationDuration: '4.5s' }}
+            className="h-full bg-gradient-to-r from-red-500 via-rose-500 to-amber-400 rounded-full animate-heroProgress"
+            style={{ animationDuration: '3.2s' }}
           />
         </div>
 
